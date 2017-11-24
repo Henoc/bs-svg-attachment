@@ -2,20 +2,36 @@
 'use strict';
 
 
-function add(a, b) {
+function $plus$caret(a, b) {
   return /* float array */[
           a[/* x */0] + b[/* x */0],
           a[/* y */1] + b[/* y */1]
         ];
 }
 
-function sub(a, b) {
+function $neg$caret(a, b) {
   return /* float array */[
           a[/* x */0] - b[/* x */0],
           a[/* y */1] - b[/* y */1]
         ];
 }
 
-exports.add = add;
-exports.sub = sub;
+function $star$caret(a, b) {
+  return /* float array */[
+          a[/* x */0] * b[/* x */0],
+          a[/* y */1] * b[/* y */1]
+        ];
+}
+
+function $slash$caret(a, b) {
+  return /* float array */[
+          a[/* x */0] / b[/* x */0],
+          a[/* y */1] / b[/* y */1]
+        ];
+}
+
+exports.$plus$caret  = $plus$caret;
+exports.$neg$caret   = $neg$caret;
+exports.$star$caret  = $star$caret;
+exports.$slash$caret = $slash$caret;
 /* No side effect */
