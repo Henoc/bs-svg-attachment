@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "scripts": {
     "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "watch": "bsb -make-world -w"
+    "build": "bsb -make-world && npm run bundle",
+    "watch": "bsb -make-world -w",
+    "bundle": "browserify lib/js/test/test.bs.js -o lib/js/test/bundle.bs.js"
   },
   "keywords": [
     "BuckleScript"
@@ -12,8 +13,10 @@
   "author": "henoc",
   "license": "MIT",
   "devDependencies": {
+    "browserify": "^14.5.0",
     "bs-platform": "^2.1.0",
-    "refmt": "^1.13.7-1"
+    "mocha": "^4.0.1",
+    "yeoman-assert": "^3.1.0"
   },
   "dependencies": {
     "bs-batteries": "0.0.14",

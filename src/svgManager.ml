@@ -98,8 +98,8 @@ let zoom t (ratio: Vec2.t) =
     changeAttr t name
     (
       fun (prevStr: string) ->
-      let prev = Js.Float.fromString prevStr in
-      Js.Float.toString (prev *. k)
+      let prev = float_of_string prevStr in
+      string_of_float (prev *. k)
     ) in
   match Element.tagName t.elem with
   | "circle" -> mulK "r" ratio.x
