@@ -10,7 +10,7 @@ Tiny utility functions for SVG DOM mainly in Buckle Script / Reason.
 ## Installaion
 
 ```bash
-npm install bs-svg-webapi
+npm install bs-svg-attachment
 ```
 
 Then add bs-svg-attachment to bs-dependencies in your bsconfig.json.
