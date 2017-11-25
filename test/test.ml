@@ -6,29 +6,44 @@ let () =
   let svgOpt = Document.getElementById "svg" DomRe.document in
   let svgroot = Option.get svgOpt in
   Element.insertAdjacentHTML AfterBegin
-  "<circle id=\"c\" cx=\"20\" cy=\"20\" r=\"10\" style=\"fill: rgb(60, 120, 5); fill-opacity: 0.5\"></circle>" svgroot;
-  let circle = 
+    "<circle id=\"c\"></circle>" svgroot;
+  let circle () = 
     Document.getElementById "c" DomRe.document
     |> Option.get
     |> fun x -> {rootElem=svgroot; elem=x}
   in
+  beforeEach (fun () ->
+    let c = Document.getElementById "c" DomRe.document |> Option.get in
+    Element.setAttribute "cx" "20" c;
+    Element.setAttribute "cy" "20" c;
+    Element.setAttribute "r" "10" c;
+    Element.setAttribute "style" "fill: rgb(60, 120, 5); fill-opacity: 0.5" c
+  );
   it "coordinates"
     (fun () ->
-      let leftTop = getLeftTop circle in
-      let center = getCenter circle in
-      let rightBottom = getRightBottom circle in
-      floatEq "leftTop" leftTop.x 10.0;
-      floatEq "center" center.x 20.0;
-      floatEq "rightBottom" rightBottom.x 30.0
+      floatEq "leftTop" (getLeftTop @@ circle ()).x 10.0;
+      floatEq "center" (getCenter @@ circle ()).x 20.0;
+      floatEq "rightBottom" (getRightBottom @@ circle ()).x 30.0;
+      setLeftTop Vec2.{x = 0.0; y = 10.0} @@ circle ();
+      floatEq "leftTop'" (getLeftTop @@ circle ()).x 0.0;
+      floatEq "center'" (getCenter @@ circle ()).x 10.0;
+      floatEq "rightBottom'" (getRightBottom @@ circle ()).x 20.0;
     );
   it "color"
     (fun () ->
-      let fillColor = getFillColor circle in
-      match fillColor with
+      (match getFillColor @@ circle () with
       | Color.Rgba rgba ->
         intEq "color r" rgba.r 60;
         intEq "color g" rgba.g 120;
         intEq "color b" rgba.b 5;
         floatEq "color a" rgba.a 0.5
-      | _ -> fail "not Rgba"
+      | _ -> fail "not Rgba");
+      setFillColor (Color.Rgba Color.{r = 10; g = 20; b = 30; a = 0.6}) @@ circle ();
+      (match getFillColor @@ circle () with
+      | Color.Rgba rgba ->
+        intEq "color r" rgba.r 10;
+        intEq "color g" rgba.g 20;
+        intEq "color b" rgba.b 30;
+        floatEq "color a" rgba.a 0.6
+      | _ -> fail "not Rgba");
     )

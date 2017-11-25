@@ -1,5 +1,6 @@
 external describle: string -> (unit -> unit) -> unit = "" [@@bs.val]
 external it: string -> (unit -> unit) -> unit = "" [@@bs.val]
+external beforeEach: (unit -> unit) -> unit = "" [@@bs.val]
 
 exception AssertionError of string
 

@@ -20,5 +20,5 @@ type svgStyle = <
   strokeOpacity: string [@bs.set];
 > Js.t
 
-external getStyle: Element.t -> svgStyle = "" [@@bs.get]
+external getStyle: Element.t -> svgStyle = "style" [@@bs.get]
 external getComputedStyle: Element.t -> svgStyle = "" [@@bs.val] [@@bs.scope "window"]

@@ -164,11 +164,11 @@ let getFillColor t =
     | _ -> Color.None
 
 let setFillColor (color: Color.t) t =
-  let style = Natives.getStyle t in
+  let style = Natives.getStyle t.elem in
   match color with
   | Color.None -> style##fill #= [%bs.raw {|null|}]; style##fillOpacity #= [%bs.raw {|null|}]
   | Color.Rgb _ -> style##fill #= (Parsers.genColor color)
-  | Color.Rgba rgba -> style##fillOpacity #= (string_of_float rgba.a)
+  | Color.Rgba rgba -> style##fill #= (Parsers.genColor color); style##fillOpacity #= (string_of_float rgba.a)
 
 let getStrokeColor t =
   let style = Natives.getComputedStyle t.elem in
@@ -179,7 +179,7 @@ let getStrokeColor t =
     | _ -> Color.None
 
 let setStrokeColor (color: Color.t) t =
-  let style = Natives.getStyle t in
+  let style = Natives.getStyle t.elem in
   match color with
   | Color.None -> style##stroke #= [%bs.raw {|null|}]; style##strokeOpacity #= [%bs.raw {|null|}]
   | Color.Rgb _ -> style##stroke #= (Parsers.genColor color)
