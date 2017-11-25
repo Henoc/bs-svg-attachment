@@ -1,6 +1,7 @@
 open Vec2
 open Webapi.Dom
 
+(** SVG DOM object type *)
 type t = Element.t
 
 let getAttr name elem =
@@ -9,6 +10,7 @@ let getAttr name elem =
 let setAttr name value elem =
   Element.setAttribute name value elem
 
+(** Apply function to the attribute and change it *)
 let changeAttr name valueTranslator elem =
   let prev = getAttr name elem in
   match Option.map valueTranslator prev with
@@ -18,6 +20,7 @@ let changeAttr name valueTranslator elem =
 let deleteAttr name elem =
   Element.setAttribute name [%bs.raw {| null |}] elem
 
+(** Move element parallel *)
 let move (delta: Vec2.t) elem =
   let tx = fun prev ->
     (float_of_string prev) +. delta.x
@@ -58,28 +61,35 @@ let move (delta: Vec2.t) elem =
   | _ ->
     ()
 
-
+(** Get the bounding box *)
 let getBBox elem =
   Natives.getBoundingClientRect elem
 
+(** Internal use only *)
 let getRootLeftTop: t -> Vec2.t = fun rootElem ->
   let rootBox = Natives.getBoundingClientRect rootElem in
   {x = rootBox##left; y = rootBox##top}
 
+(** Internal use only *)
 let getRootRightBottom: t -> Vec2.t = fun rootElem ->
   let rootBox = Natives.getBoundingClientRect rootElem in
   {x = rootBox##right; y = rootBox##bottom}
 
+(** Internal use only *)
 let getRootCenter: t -> Vec2.t = fun rootElem ->
   let rootBox = Natives.getBoundingClientRect rootElem in
   {x = (rootBox##left +. rootBox##right) /. 2.0;
   y = (rootBox##top +. rootBox##bottom) /. 2.0}
 
+(** svg element -> target element -> Vec2.t
+Get left top coordinate of the element *)
 let getLeftTop root elem  =
   let box = getBBox elem  in
   let ground = getRootLeftTop root in
   {x=box##left; y=box##top} -^ ground
 
+(** Vec2.t -> svg element -> target element -> unit
+Set left top coordinate of the element *)
 let setLeftTop vec2 root elem  =
   let prev= getLeftTop root elem  in
   let delta = vec2 -^ prev in
@@ -102,6 +112,8 @@ let setCenter vec2 root elem  =
   let delta = vec2 -^ (getCenter root elem ) in
   move delta elem 
 
+(** zoom ratio -> svg element -> target element -> unit
+Zoom the element *)
 let zoom (ratio: Vec2.t) root elem  =
   let center = getCenter root elem  in
   let mulK name k =
@@ -145,13 +157,17 @@ let zoom (ratio: Vec2.t) root elem  =
   ;
   setCenter center root elem 
 
+(** Get the element size, it is calculated by bounding box *)
 let getSize elem  =
   let box = getBBox elem  in
   {x = box##width; y = box##height}
 
+(** Set the element size *)
 let setSize vec2 elem  =
   zoom (vec2 /^ (getSize elem )) elem 
 
+(** target element -> Color.t
+Get fill computed color of the target, includes alpha *)
 let getFillColor elem  =
   let style = Natives.getComputedStyle elem  in
   if style##fill == "" then Color.None
@@ -160,6 +176,8 @@ let getFillColor elem  =
     | Color.Rgb rgb -> Color.Rgba {r = rgb.r; g = rgb.g; b = rgb.b; a = float_of_string style##fillOpacity}
     | _ -> Color.None
 
+(** Color.t -> target elememt -> unit
+Set fill color of the target, includes alpha *)
 let setFillColor (color: Color.t) elem  =
   let style = Natives.getStyle elem  in
   match color with
@@ -167,6 +185,8 @@ let setFillColor (color: Color.t) elem  =
   | Color.Rgb _ -> style##fill #= (Parsers.genColor color)
   | Color.Rgba rgba -> style##fill #= (Parsers.genColor color); style##fillOpacity #= (string_of_float rgba.a)
 
+(** target element -> Color.t
+Get stroke computed color of the target, includes alpha *)
 let getStrokeColor elem  =
   let style = Natives.getComputedStyle elem  in
   if style##stroke == "" then Color.None
@@ -175,6 +195,8 @@ let getStrokeColor elem  =
     | Color.Rgb rgb -> Color.Rgba {r = rgb.r; g = rgb.g; b = rgb.b; a = float_of_string style##strokeOpacity}
     | _ -> Color.None
 
+(** Color.t -> target elememt -> unit
+Set stroke color of the target, includes alpha *)
 let setStrokeColor (color: Color.t) elem  =
   let style = Natives.getStyle elem  in
   match color with
@@ -182,4 +204,5 @@ let setStrokeColor (color: Color.t) elem  =
   | Color.Rgb _ -> style##stroke #= (Parsers.genColor color)
   | Color.Rgba rgba -> style##strokeOpacity #= (string_of_float rgba.a)
 
+(** Get the style object *)
 let getStyle = Natives.getStyle
