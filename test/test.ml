@@ -10,7 +10,6 @@ let () =
   let circle () = 
     Document.getElementById "c" DomRe.document
     |> Option.get
-    |> fun x -> {rootElem=svgroot; elem=x}
   in
   beforeEach (fun () ->
     let c = Document.getElementById "c" DomRe.document |> Option.get in
@@ -21,13 +20,13 @@ let () =
   );
   it "coordinates"
     (fun () ->
-      floatEq "leftTop" (getLeftTop @@ circle ()).x 10.0;
-      floatEq "center" (getCenter @@ circle ()).x 20.0;
-      floatEq "rightBottom" (getRightBottom @@ circle ()).x 30.0;
-      setLeftTop Vec2.{x = 0.0; y = 10.0} @@ circle ();
-      floatEq "leftTop'" (getLeftTop @@ circle ()).x 0.0;
-      floatEq "center'" (getCenter @@ circle ()).x 10.0;
-      floatEq "rightBottom'" (getRightBottom @@ circle ()).x 20.0;
+      floatEq "leftTop" (getLeftTop svgroot @@ circle ()).x 10.0;
+      floatEq "center" (getCenter svgroot @@ circle ()).x 20.0;
+      floatEq "rightBottom" (getRightBottom svgroot @@ circle ()).x 30.0;
+      setLeftTop Vec2.{x = 0.0; y = 10.0} svgroot @@ circle ();
+      floatEq "leftTop'" (getLeftTop svgroot @@ circle ()).x 0.0;
+      floatEq "center'" (getCenter svgroot @@ circle ()).x 10.0;
+      floatEq "rightBottom'" (getRightBottom svgroot @@ circle ()).x 20.0;
     );
   it "color"
     (fun () ->

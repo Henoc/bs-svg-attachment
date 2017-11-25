@@ -1,27 +1,24 @@
 open Vec2
 open Webapi.Dom
 
-type t = {
-  rootElem: Element.t;
-  elem: Element.t;
-}
+type t = Element.t
 
-let getAttr name t =
-  Element.getAttribute name t.elem
+let getAttr name elem =
+  Element.getAttribute name elem
 
-let setAttr name value t =
-  Element.setAttribute name value t.elem
+let setAttr name value elem =
+  Element.setAttribute name value elem
 
-let changeAttr name valueTranslator t =
-  let prev = getAttr name t in
+let changeAttr name valueTranslator elem =
+  let prev = getAttr name elem in
   match Option.map valueTranslator prev with
-  | Some(next) -> Element.setAttribute name next t.elem
+  | Some(next) -> Element.setAttribute name next elem
   | None -> ()
 
-let deleteAttr name t =
-  Element.setAttribute name [%bs.raw {| null |}] t.elem
+let deleteAttr name elem =
+  Element.setAttribute name [%bs.raw {| null |}] elem
 
-let move (delta: Vec2.t) t =
+let move (delta: Vec2.t) elem =
   let tx = fun prev ->
     (float_of_string prev) +. delta.x
     |> string_of_float
@@ -30,91 +27,91 @@ let move (delta: Vec2.t) t =
     (float_of_string prev) +. delta.y
     |> string_of_float
   in
-  match Element.tagName t.elem with
+  match Element.tagName elem with
   | "circle" | "ellipse" ->
-    changeAttr "cx" tx t;
-    changeAttr "cy" ty t
+    changeAttr "cx" tx elem;
+    changeAttr "cy" ty elem
   | "image" | "text" | "rect" | "use" ->
-    changeAttr "x" tx t;
-    changeAttr "y" ty t
+    changeAttr "x" tx elem;
+    changeAttr "y" ty elem
   | "line" ->
-    changeAttr "x1" tx t;
-    changeAttr "y1" ty t;
-    changeAttr "x2" tx t;
-    changeAttr "y2" ty t
+    changeAttr "x1" tx elem;
+    changeAttr "y1" ty elem;
+    changeAttr "x2" tx elem;
+    changeAttr "y2" ty elem
   | "polygon" | "polyline" ->
-    let points = getAttr "points" t
+    let points = getAttr "points" elem
     |> Option.map Parsers.parsePoints
     |> Option.default []
     |> List.map (fun p -> p +^ delta)
     in
-    setAttr "points" (Parsers.genPoints points) t
+    setAttr "points" (Parsers.genPoints points) elem
   | "path" ->
-    let d = getAttr "d" t
+    let d = getAttr "d" elem
     |> Option.map Parsers.parseD
     |> Option.default []
     |> List.map (fun op -> Path.{op with points =
       (List.map (fun p -> p +^ delta) op.points)
     })
     in
-    setAttr "d" (Parsers.genD d) t
+    setAttr "d" (Parsers.genD d) elem
   | _ ->
     ()
 
 
-let getBBox t =
-  Natives.getBoundingClientRect t.elem
+let getBBox elem =
+  Natives.getBoundingClientRect elem
 
-let getRootLeftTop: t -> Vec2.t = fun t ->
-  let rootBox = Natives.getBoundingClientRect t.rootElem in
+let getRootLeftTop: t -> Vec2.t = fun rootElem ->
+  let rootBox = Natives.getBoundingClientRect rootElem in
   {x = rootBox##left; y = rootBox##top}
 
-let getRootRightBottom: t -> Vec2.t = fun t ->
-  let rootBox = Natives.getBoundingClientRect t.rootElem in
+let getRootRightBottom: t -> Vec2.t = fun rootElem ->
+  let rootBox = Natives.getBoundingClientRect rootElem in
   {x = rootBox##right; y = rootBox##bottom}
 
-let getRootCenter: t -> Vec2.t = fun t ->
-  let rootBox = Natives.getBoundingClientRect t.rootElem in
+let getRootCenter: t -> Vec2.t = fun rootElem ->
+  let rootBox = Natives.getBoundingClientRect rootElem in
   {x = (rootBox##left +. rootBox##right) /. 2.0;
   y = (rootBox##top +. rootBox##bottom) /. 2.0}
 
-let getLeftTop t =
-  let box = getBBox t in
-  let ground = getRootLeftTop t in
+let getLeftTop root elem  =
+  let box = getBBox elem  in
+  let ground = getRootLeftTop root in
   {x=box##left; y=box##top} -^ ground
 
-let setLeftTop vec2 t =
-  let prev= getLeftTop t in
+let setLeftTop vec2 root elem  =
+  let prev= getLeftTop root elem  in
   let delta = vec2 -^ prev in
-  move delta t
+  move delta elem 
 
-let getRightBottom t =
-  let box = getBBox t in
-  let ground = getRootLeftTop t in
+let getRightBottom root elem  =
+  let box = getBBox elem  in
+  let ground = getRootLeftTop root in
   {x=box##right; y=box##bottom} -^ ground
 
-let getCenter t =
-  let box = getBBox t in
-  let ground = getRootLeftTop t in
+let getCenter root elem  =
+  let box = getBBox elem  in
+  let ground = getRootLeftTop root in
   {
     x = (box##left +. box##right) /. 2.0;
     y = (box##top +. box##bottom) /. 2.0
   } -^ ground
 
-let setCenter vec2 t =
-  let delta = vec2 -^ (getCenter t) in
-  move delta t
+let setCenter vec2 root elem  =
+  let delta = vec2 -^ (getCenter root elem ) in
+  move delta elem 
 
-let zoom (ratio: Vec2.t) t =
-  let center = getCenter t in
+let zoom (ratio: Vec2.t) root elem  =
+  let center = getCenter root elem  in
   let mulK name k =
     changeAttr name
     (
       fun (prevStr: string) ->
       let prev = float_of_string prevStr in
       string_of_float (prev *. k)
-    ) t in
-  match Element.tagName t.elem with
+    ) elem  in
+  match Element.tagName elem  with
   | "circle" -> mulK "r" ratio.x
   | "ellipse" ->
     mulK "rx" ratio.x;
@@ -128,58 +125,58 @@ let zoom (ratio: Vec2.t) t =
     mulK "x2" ratio.x;
     mulK "y2" ratio.y
   | "polygon" | "polyline" -> 
-    let points = getAttr "points" t
+    let points = getAttr "points" elem 
     |> Option.map Parsers.parsePoints
     |> Option.default []
     |> List.map (fun p -> p *^ ratio)
     in
-    setAttr "points" (Parsers.genPoints points) t
+    setAttr "points" (Parsers.genPoints points) elem 
   | "path" ->
-    let d = getAttr "d" t
+    let d = getAttr "d" elem 
     |> Option.map Parsers.parseD
     |> Option.default []
     |> List.map (fun op -> Path.{op with points =
       (List.map (fun p -> p *^ ratio) op.points)
     })
     in
-    setAttr "d" (Parsers.genD d) t
+    setAttr "d" (Parsers.genD d) elem 
   | _ ->
     ()
   ;
-  setCenter center t
+  setCenter center root elem 
 
-let getSize t =
-  let box = getBBox t in
+let getSize elem  =
+  let box = getBBox elem  in
   {x = box##width; y = box##height}
 
-let setSize vec2 t =
-  zoom (vec2 /^ (getSize t)) t
+let setSize vec2 elem  =
+  zoom (vec2 /^ (getSize elem )) elem 
 
-let getFillColor t =
-  let style = Natives.getComputedStyle t.elem in
+let getFillColor elem  =
+  let style = Natives.getComputedStyle elem  in
   if style##fill == "" then Color.None
   else
     match Parsers.parseRgb @@ style##fill with
     | Color.Rgb rgb -> Color.Rgba {r = rgb.r; g = rgb.g; b = rgb.b; a = float_of_string style##fillOpacity}
     | _ -> Color.None
 
-let setFillColor (color: Color.t) t =
-  let style = Natives.getStyle t.elem in
+let setFillColor (color: Color.t) elem  =
+  let style = Natives.getStyle elem  in
   match color with
   | Color.None -> style##fill #= [%bs.raw {|null|}]; style##fillOpacity #= [%bs.raw {|null|}]
   | Color.Rgb _ -> style##fill #= (Parsers.genColor color)
   | Color.Rgba rgba -> style##fill #= (Parsers.genColor color); style##fillOpacity #= (string_of_float rgba.a)
 
-let getStrokeColor t =
-  let style = Natives.getComputedStyle t.elem in
+let getStrokeColor elem  =
+  let style = Natives.getComputedStyle elem  in
   if style##stroke == "" then Color.None
   else
     match Parsers.parseRgb @@ style##stroke with
     | Color.Rgb rgb -> Color.Rgba {r = rgb.r; g = rgb.g; b = rgb.b; a = float_of_string style##strokeOpacity}
     | _ -> Color.None
 
-let setStrokeColor (color: Color.t) t =
-  let style = Natives.getStyle t.elem in
+let setStrokeColor (color: Color.t) elem  =
+  let style = Natives.getStyle elem  in
   match color with
   | Color.None -> style##stroke #= [%bs.raw {|null|}]; style##strokeOpacity #= [%bs.raw {|null|}]
   | Color.Rgb _ -> style##stroke #= (Parsers.genColor color)
