@@ -13,10 +13,11 @@
   "author": "henoc",
   "license": "MIT",
   "devDependencies": {
+    "assert": "^1.4.1",
     "browserify": "^14.5.0",
     "bs-platform": "^2.1.0",
-    "mocha": "^4.0.1",
-    "yeoman-assert": "^3.1.0"
+    "expect.js": "^0.3.1",
+    "mocha": "^4.0.1"
   },
   "dependencies": {
     "bs-batteries": "0.0.14",

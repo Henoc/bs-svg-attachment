@@ -1,6 +1,6 @@
 open Webapi.Dom
 
-type domRect = {
+type domRect = <
   x: float;
   y: float;
   width: float;
@@ -9,17 +9,16 @@ type domRect = {
   right: float;
   bottom: float;
   left: float;
-}
+> Js.t
 
 let getBoundingClientRect: Element.t -> domRect = [%bs.raw {| x => x.getBoundingClientRect() |}]
 
-type svgStyle
+type svgStyle = <
+  fill: string [@bs.set];
+  stroke: string [@bs.set];
+  fillOpacity: string [@bs.set];
+  strokeOpacity: string [@bs.set];
+> Js.t
 
-external style: Element.t -> svgStyle = "" [@@bs.get]
-
-external getFill: svgStyle -> string = "fill" [@@bs.get]
-external setFill: svgStyle -> string -> unit = "fill" [@@bs.set]
-
-external getStroke: svgStyle -> string = "stroke" [@@bs.get]
-external setStroke: svgStyle -> string -> unit = "stroke" [@@bs.set]
-
+external getStyle: Element.t -> svgStyle = "" [@@bs.get]
+external getComputedStyle: Element.t -> svgStyle = "" [@@bs.val] [@@bs.scope "window"]

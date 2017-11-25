@@ -1,5 +1,22 @@
 external describle: string -> (unit -> unit) -> unit = "" [@@bs.val]
 external it: string -> (unit -> unit) -> unit = "" [@@bs.val]
 
-type assertion = bool -> unit
-external assertion: assertion = "yeoman-assert" [@@bs.module]
+exception AssertionError of string
+
+let shouldTrue label value =
+  if value == false then raise (AssertionError ("at " ^ label))
+
+let floatEq label value1 value2 =
+  if value1 != value2 then
+  let v1str = string_of_float value1 in
+  let v2str = string_of_float value2 in
+  raise (AssertionError ("at " ^ label ^ ", " ^ v1str ^ " not equal " ^ v2str))
+
+let intEq label value1 value2 =
+  if value1 != value2 then
+  let v1str = string_of_int value1 in
+  let v2str = string_of_int value2 in
+  raise (AssertionError ("at " ^ label ^ ", " ^ v1str ^ " not equal " ^ v2str))
+
+
+let fail label = raise (AssertionError ("at " ^ label))
