@@ -13,7 +13,6 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
-      // add your bs-dependencies here 
       "bs-batteries",
       "bs-webapi"
   ],
