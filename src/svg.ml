@@ -61,10 +61,6 @@ let move (delta: Vec2.t) elem =
   | _ ->
     ()
 
-(** Get the bounding box *)
-let getBBox elem =
-  Natives.getBoundingClientRect elem
-
 (** Internal use only *)
 let getRootLeftTop: t -> Vec2.t = fun rootElem ->
   let rootBox = Natives.getBoundingClientRect rootElem in
@@ -84,9 +80,9 @@ let getRootCenter: t -> Vec2.t = fun rootElem ->
 (** svg element -> target element -> Vec2.t
 Get left top coordinate of the element *)
 let getLeftTop root elem  =
-  let box = getBBox elem  in
+  let box = Box.getRBox elem  in
   let ground = getRootLeftTop root in
-  {x=box##left; y=box##top} -^ ground
+  box.leftTop -^ ground
 
 (** Vec2.t -> svg element -> target element -> unit
 Set left top coordinate of the element *)
@@ -96,17 +92,14 @@ let setLeftTop vec2 root elem  =
   move delta elem 
 
 let getRightBottom root elem  =
-  let box = getBBox elem  in
+  let box = Box.getRBox elem  in
   let ground = getRootLeftTop root in
-  {x=box##right; y=box##bottom} -^ ground
+  box.rightBottom -^ ground
 
 let getCenter root elem  =
-  let box = getBBox elem  in
+  let box = Box.getRBox elem  in
   let ground = getRootLeftTop root in
-  {
-    x = (box##left +. box##right) /. 2.0;
-    y = (box##top +. box##bottom) /. 2.0
-  } -^ ground
+  (box.leftTop +^ box.rightBottom /^ {x=2.0;y=2.0}) -^ ground
 
 let setCenter vec2 root elem  =
   let delta = vec2 -^ (getCenter root elem ) in
@@ -157,10 +150,10 @@ let zoom (ratio: Vec2.t) root elem  =
   ;
   setCenter center root elem 
 
-(** Get the element size, it is calculated by bounding box *)
+(** Get the element size, it is calculated by bounding client rect *)
 let getSize elem  =
-  let box = getBBox elem  in
-  {x = box##width; y = box##height}
+  let box = Box.getRBox elem  in
+  box.rightBottom -^ box.leftTop
 
 (** Set the element size *)
 let setSize vec2 elem  =

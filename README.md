@@ -27,3 +27,10 @@ Then add them to bs-dependencies in your bsconfig.json.
   ]
 }
 ```
+
+## Modules
+
+- Svg
+  Functions for one element
+- SvgSet
+  Functions for element set

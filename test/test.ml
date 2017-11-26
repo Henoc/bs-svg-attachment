@@ -18,8 +18,8 @@ let () =
     Element.setAttribute "r" "10" c;
     Element.setAttribute "style" "fill: rgb(60, 120, 5); fill-opacity: 0.5" c
   );
-  it "coordinates"
-    (fun () ->
+  it "coordinates" @@
+    fun () ->
       floatEq "leftTop" (getLeftTop svgroot @@ circle ()).x 10.0;
       floatEq "center" (getCenter svgroot @@ circle ()).x 20.0;
       floatEq "rightBottom" (getRightBottom svgroot @@ circle ()).x 30.0;
@@ -27,9 +27,9 @@ let () =
       floatEq "leftTop'" (getLeftTop svgroot @@ circle ()).x 0.0;
       floatEq "center'" (getCenter svgroot @@ circle ()).x 10.0;
       floatEq "rightBottom'" (getRightBottom svgroot @@ circle ()).x 20.0;
-    );
-  it "color"
-    (fun () ->
+    ;
+  it "color" @@
+    fun () ->
       (match getFillColor @@ circle () with
       | Color.Rgba rgba ->
         intEq "color r" rgba.r 60;
@@ -45,4 +45,4 @@ let () =
         intEq "color b" rgba.b 30;
         floatEq "color a" rgba.a 0.6
       | _ -> fail "not Rgba");
-    )
+    
