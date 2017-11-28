@@ -8,13 +8,15 @@
       "type": "dev"
     }
   ],
+  "namespace": true,
   "package-specs": {
     "module": "commonjs"
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
       "bs-batteries",
-      "bs-webapi"
+      "bs-webapi",
+      "bs-little-parser"
   ],
   "refmt": 3
 }

@@ -86,7 +86,7 @@ let setCenter vec2 elem  =
   let delta = vec2 -^ (getCenter elem ) in
   move delta elem 
 
-(** zoom ratio -> svg element -> target element -> unit
+(** zoom ratio -> target element -> unit
 Zoom the element *)
 let zoom (ratio: Vec2.t) elem  =
   let center = getCenter elem  in

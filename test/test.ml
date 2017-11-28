@@ -55,3 +55,26 @@ let () =
         intEq "color b" rgb.b 15;
       | _ -> fail "not Rgb"
       );
+      (match Parsers.parseRgba "rgba(5, 10, 15, 0.1)" with
+      | Color.Rgba rgba ->
+        intEq "color r" rgba.r 5;
+        intEq "color g" rgba.g 10;
+        intEq "color b" rgba.b 15;
+        floatEq "color a" rgba.a 0.1;
+      | _ -> fail "not Rgba"
+      );
+      (match Parsers.parsePoints "5 6, 7 8, 9 10" with
+      | one :: two :: three :: [] ->
+        floatEq "point 0 x" one.x 5.;
+        floatEq "point 0 y" one.y 6.;
+        floatEq "point 1 x" two.x 7.;
+        floatEq "point 1 y" two.y 8.;
+        floatEq "point 2 x" three.x 9.;
+        floatEq "point 2 y" three.y 10.;
+      | _ -> fail "not 3 points"
+      );
+      (match Parsers.parseD "M10 10 C 20 20, 40 20, 50 10" with
+      | one :: two :: [] ->
+        stringEq "path 0 op" one.operator "M";
+        stringEq "path 1 op" one.operator "C"
+      | _ -> fail "not path")

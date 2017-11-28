@@ -19,5 +19,8 @@ let intEq label value1 value2 =
   let v2str = string_of_int value2 in
   raise (AssertionError ("at " ^ label ^ ", " ^ v1str ^ " not equal " ^ v2str))
 
+let stringEq label value1 value2 =
+  if value1 != value2 then
+  raise (AssertionError ("at " ^ label ^ ", " ^ value1 ^ " not equal " ^ value2))
 
 let fail label = raise (AssertionError ("at " ^ label))

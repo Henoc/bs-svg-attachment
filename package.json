@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "bs-batteries": "0.0.14",
+    "bs-little-parser": "^0.2.2",
     "bs-webapi": "^0.7.0"
   }
 }
