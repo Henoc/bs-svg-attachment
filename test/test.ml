@@ -20,13 +20,13 @@ let () =
   );
   it "coordinates" @@
     fun () ->
-      floatEq "leftTop" (getLeftTop svgroot @@ circle ()).x 10.0;
-      floatEq "center" (getCenter svgroot @@ circle ()).x 20.0;
-      floatEq "rightBottom" (getRightBottom svgroot @@ circle ()).x 30.0;
-      setLeftTop Vec2.{x = 0.0; y = 10.0} svgroot @@ circle ();
-      floatEq "leftTop'" (getLeftTop svgroot @@ circle ()).x 0.0;
-      floatEq "center'" (getCenter svgroot @@ circle ()).x 10.0;
-      floatEq "rightBottom'" (getRightBottom svgroot @@ circle ()).x 20.0;
+      floatEq "leftTop" (getLeftTop @@ circle ()).x 10.0;
+      floatEq "center" (getCenter @@ circle ()).x 20.0;
+      floatEq "rightBottom" (getRightBottom @@ circle ()).x 30.0;
+      setLeftTop Vec2.{x = 0.0; y = 10.0} @@ circle ();
+      floatEq "leftTop'" (getLeftTop @@ circle ()).x 0.0;
+      floatEq "center'" (getCenter @@ circle ()).x 10.0;
+      floatEq "rightBottom'" (getRightBottom @@ circle ()).x 20.0;
     ;
   it "color" @@
     fun () ->
@@ -45,4 +45,13 @@ let () =
         intEq "color b" rgba.b 30;
         floatEq "color a" rgba.a 0.6
       | _ -> fail "not Rgba");
-    
+    ;
+  it "parsers" @@
+    fun () ->
+      (match Parsers.parseRgb "rgb(5, 10, 15)" with
+      | Color.Rgb rgb ->
+        intEq "color r" rgb.r 5;
+        intEq "color g" rgb.g 10;
+        intEq "color b" rgb.b 15;
+      | _ -> fail "not Rgb"
+      );

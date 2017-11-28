@@ -61,54 +61,35 @@ let move (delta: Vec2.t) elem =
   | _ ->
     ()
 
-(** Internal use only *)
-let getRootLeftTop: t -> Vec2.t = fun rootElem ->
-  let rootBox = Natives.getBoundingClientRect rootElem in
-  {x = rootBox##left; y = rootBox##top}
-
-(** Internal use only *)
-let getRootRightBottom: t -> Vec2.t = fun rootElem ->
-  let rootBox = Natives.getBoundingClientRect rootElem in
-  {x = rootBox##right; y = rootBox##bottom}
-
-(** Internal use only *)
-let getRootCenter: t -> Vec2.t = fun rootElem ->
-  let rootBox = Natives.getBoundingClientRect rootElem in
-  {x = (rootBox##left +. rootBox##right) /. 2.0;
-  y = (rootBox##top +. rootBox##bottom) /. 2.0}
-
-(** svg element -> target element -> Vec2.t
+(** target element -> Vec2.t
 Get left top coordinate of the element *)
-let getLeftTop root elem  =
-  let box = Box.getRBox elem  in
-  let ground = getRootLeftTop root in
-  box.leftTop -^ ground
+let getLeftTop elem  =
+  let box = Box.getBBox elem  in
+  box.leftTop
 
-(** Vec2.t -> svg element -> target element -> unit
+(** Vec2.t -> target element -> unit
 Set left top coordinate of the element *)
-let setLeftTop vec2 root elem  =
-  let prev= getLeftTop root elem  in
+let setLeftTop vec2 elem  =
+  let prev= getLeftTop elem  in
   let delta = vec2 -^ prev in
   move delta elem 
 
-let getRightBottom root elem  =
-  let box = Box.getRBox elem  in
-  let ground = getRootLeftTop root in
-  box.rightBottom -^ ground
+let getRightBottom elem  =
+  let box = Box.getBBox elem  in
+  box.rightBottom
 
-let getCenter root elem  =
-  let box = Box.getRBox elem  in
-  let ground = getRootLeftTop root in
-  (box.leftTop +^ box.rightBottom /^ {x=2.0;y=2.0}) -^ ground
+let getCenter elem  =
+  let box = Box.getBBox elem  in
+  ((box.leftTop +^ box.rightBottom) /^ {x=2.0;y=2.0})
 
-let setCenter vec2 root elem  =
-  let delta = vec2 -^ (getCenter root elem ) in
+let setCenter vec2 elem  =
+  let delta = vec2 -^ (getCenter elem ) in
   move delta elem 
 
 (** zoom ratio -> svg element -> target element -> unit
 Zoom the element *)
-let zoom (ratio: Vec2.t) root elem  =
-  let center = getCenter root elem  in
+let zoom (ratio: Vec2.t) elem  =
+  let center = getCenter elem  in
   let mulK name k =
     changeAttr name
     (
@@ -148,11 +129,11 @@ let zoom (ratio: Vec2.t) root elem  =
   | _ ->
     ()
   ;
-  setCenter center root elem 
+  setCenter center elem 
 
 (** Get the element size, it is calculated by bounding client rect *)
 let getSize elem  =
-  let box = Box.getRBox elem  in
+  let box = Box.getBBox elem  in
   box.rightBottom -^ box.leftTop
 
 (** Set the element size *)

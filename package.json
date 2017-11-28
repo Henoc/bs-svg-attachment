@@ -13,7 +13,8 @@
     "bundle": "browserify lib/js/test/test.bs.js -o lib/js/test/bundle.bs.js"
   },
   "keywords": [
-    "BuckleScript", "SVG"
+    "BuckleScript",
+    "SVG"
   ],
   "author": "henoc",
   "license": "MIT",

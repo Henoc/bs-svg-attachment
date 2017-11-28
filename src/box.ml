@@ -5,11 +5,12 @@ type t = {
   rightBottom: Vec2.t;
 }
 
-let getRBox elem =
-  let rect = Natives.getBoundingClientRect elem in
+let getBBox elem =
+  let rect = Natives.getBBox elem in
+  Js.log rect;
   {
-    leftTop = Vec2.{x = rect##left; y = rect##top};
-    rightBottom = Vec2.{x = rect##right; y = rect##bottom};
+    leftTop = Vec2.{x = rect##x; y = rect##y};
+    rightBottom = Vec2.{x = rect##x +. rect##width; y = rect##y +. rect##height};
   }
 
 let merge a b =

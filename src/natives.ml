@@ -1,17 +1,13 @@
 open Webapi.Dom
 
-type domRect = <
+type svgRect = <
   x: float;
   y: float;
   width: float;
-  height: float;
-  top: float;
-  right: float;
-  bottom: float;
-  left: float;
+  height: float
 > Js.t
 
-let getBoundingClientRect: Element.t -> domRect = [%bs.raw {| x => x.getBoundingClientRect() |}]
+let getBBox: Element.t -> svgRect = [%bs.raw {| x => x.getBBox() |}]
 
 type svgStyle = <
   clipPath: string [@bs.set];
