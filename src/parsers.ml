@@ -1,3 +1,6 @@
+open! BsLittleParser.Parser
+open BsLittleParser
+
 let next regex s =
   let resultOpt = Js.Re.exec s regex in
     match resultOpt with
@@ -72,22 +75,13 @@ let genPoints points =
   loop (List.tl points) (toStr @@ List.hd points)
 
 let parseD s =
-  let rec loop2 regex acc = match next regex s with
-  | None -> acc
-  | Some n -> match next regex s with
-    | None -> acc
-    | Some k -> loop2 regex (Vec2.{x = float_of_string n; y = float_of_string k} :: acc)
-  in
-  let rec loop regex acc = match next regex s with
-  | None -> acc
-  | Some op ->
-    let sepFloatRegex = [%re "/^[,\\s]+[+-]?[0-9]+(\\.[0-9]*)?([eE][+-]?[0-9]+)?/g"] in
-    let points = loop2 sepFloatRegex [] in
-    loop regex (Path.{operator = op; points = points} :: acc)
-  in
-  let dOperator = [%re "/[mMlLhHvVaAqQtTcCsSzZ]/g"] in
-  loop dOperator []
-  |> List.rev
+  let opParser = regex [%re "/[mMlLhHvVaAqQtTcCsSzZ]/"] in
+  let floatParser = regex [%re "/[+-]?[0-9]+(\\.[0-9]*)?([eE][+-]?[0-9]+)?/"] in
+  let floatPairParser = (floatParser <*> floatParser) ^^ (fun (x, y) -> Vec2.{x = float_of_string x; y = float_of_string y}) in
+  let pathParser = rep ((opParser <*> (rep floatPairParser)) ^^ (fun (x, y) -> Path.{operator = x; points = y}) ) in
+  match pathParser Input.{text = s; index = 0; whitespace = " ,\n"} with
+  | ParseResult.ParseFailure _ -> Js.log "fail"; []
+  | ParseResult.ParseSuccess (r, _) -> Js.log "success"; r
 
 let genD operators =
   let toStr (op: Path.t) =

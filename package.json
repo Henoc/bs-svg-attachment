@@ -1,6 +1,6 @@
 {
   "name": "bs-svg-attachment",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tiny SVG utilities",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "bs-batteries": "0.0.14",
-    "bs-little-parser": "^0.2.2",
+    "bs-little-parser": "^0.3.3",
     "bs-webapi": "^0.7.0"
   }
 }

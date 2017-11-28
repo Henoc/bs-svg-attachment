@@ -76,5 +76,5 @@ let () =
       (match Parsers.parseD "M10 10 C 20 20, 40 20, 50 10" with
       | one :: two :: [] ->
         stringEq "path 0 op" one.operator "M";
-        stringEq "path 1 op" one.operator "C"
+        stringEq "path 1 op" two.operator "C"
       | _ -> fail "not path")

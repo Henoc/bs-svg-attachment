@@ -7,7 +7,6 @@ type t = {
 
 let getBBox elem =
   let rect = Natives.getBBox elem in
-  Js.log rect;
   {
     leftTop = Vec2.{x = rect##x; y = rect##y};
     rightBottom = Vec2.{x = rect##x +. rect##width; y = rect##y +. rect##height};
