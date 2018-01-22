@@ -1,15 +1,15 @@
 # bs-svg-attachment
 
-Tiny utility functions for SVG DOM mainly in Buckle Script / Reason.
+Tiny utility functions for SVG DOM mainly in BuckleScript / Reason.
 
 ## Features
 
 - Simple, easy.
 - No dirty DOM. No append some extra attributes.
 
-## Installaion
+## Installation
 
-SVG attachment depents on types of `bs-webapi`.
+SVG attachment depends on types of `bs-webapi`.
 
 ```bash
 npm install bs-svg-attachment bs-webapi
